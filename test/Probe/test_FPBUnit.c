@@ -1062,7 +1062,10 @@ void test_getAllActiveBreakpointAddress_given_comp1_and_comp2_busy_should_read_c
   
   
   address = getAllActiveBreakpointAddress();
-  TEST_ASSERT_EQUAL(0,address[0]);
-  TEST_ASSERT_EQUAL(0x1ABC883E,address[1]);
-  TEST_ASSERT_EQUAL(0x1ABC883C,address[2]);
+  TEST_ASSERT_EQUAL(0x1ABC883E,address[0]);
+  TEST_ASSERT_EQUAL(0x1ABC883C,address[1]);
+  TEST_ASSERT_EQUAL(0,address[2]);
+  TEST_ASSERT_EQUAL(0,address[3]);
+  TEST_ASSERT_EQUAL(0,address[4]);
+  TEST_ASSERT_EQUAL(0,address[5]);
 }

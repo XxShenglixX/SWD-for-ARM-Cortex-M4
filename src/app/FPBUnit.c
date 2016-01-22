@@ -514,17 +514,27 @@ uint32_t retrieveBreakpointAddress(int instructionCOMPno)
 
 /**
  *  Get all the address of the active breakpoint
- *
+ *  and rearrange the data in order to reduce the size to be send across later
  */
 uint32_t * getAllActiveBreakpointAddress()
 {
+  uint32_t temp[INSTRUCTION_COMP_NUM] = {};
   static uint32_t address[INSTRUCTION_COMP_NUM] = {};
-  int size = 0 , i = 0 ;
+  int i = 0 , j = 0;
   
   for(i=0; i < INSTRUCTION_COMP_NUM ; i++)
   {
     if(instructionComparatorReady[i] == COMP_BUSY)
-      address[i] = retrieveBreakpointAddress(i);
+      temp[i] = retrieveBreakpointAddress(i);
+  }
+  
+   for(i=0; i < INSTRUCTION_COMP_NUM ; i++)
+  {
+    if(temp[i] != 0)
+    {
+      address[j] = temp[i] ;
+      j++ ;
+    }
   }
   
   return address;
