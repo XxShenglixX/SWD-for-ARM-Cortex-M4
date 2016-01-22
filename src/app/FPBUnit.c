@@ -181,7 +181,6 @@ int autoSetInstructionBreakpoint(uint32_t instructionAddress)
   
   manualSetInstructionBreakpoint(comparatorToUse,instructionAddress,matchingMode);
 
-  
   return comparatorToUse;
 }
 
@@ -487,4 +486,46 @@ void disableAllFlashPatchComparatorSetToRemap()
     if(literalComparatorReady[i] == COMP_REMAP)
     disableFlashPatchLiteralComparator(i);
   }
+}
+
+/**
+ *  Retrieve the breakpoint address set inside the selected comparator
+ *
+ *  Input : instructionCOMPno is the selected comparator which the address set will be retrieved
+ *				  Possible values : 
+ *					  INSTRUCTION_COMP0			Instruction comparator number 0	
+ *					  INSTRUCTION_COMP1			Instruction comparator number 1	
+ *					  INSTRUCTION_COMP2     Instruction comparator number 2
+ *					  INSTRUCTION_COMP3     Instruction comparator number 3
+ *					  INSTRUCTION_COMP4     Instruction comparator number 4
+ *					  INSTRUCTION_COMP5     Instruction comparator number 5
+ */
+uint32_t retrieveBreakpointAddress(int instructionCOMPno)
+{
+  uint32_t dataRead = 0 ; 
+  
+  memoryReadWord((uint32_t)&(INSTRUCTION_COMP[instructionCOMPno]), &dataRead);
+
+  if ((dataRead & FP_COMP_MATCH_MASK) == MATCH_UPPERHALFWORD)
+    return (dataRead & FP_COMP_ADDRESS_MASK )+ 2;
+  
+  return dataRead & FP_COMP_ADDRESS_MASK;
+}
+
+/**
+ *  Get all the address of the active breakpoint
+ *
+ */
+uint32_t * getAllActiveBreakpointAddress()
+{
+  static uint32_t address[INSTRUCTION_COMP_NUM] = {};
+  int size = 0 , i = 0 ;
+  
+  for(i=0; i < INSTRUCTION_COMP_NUM ; i++)
+  {
+    if(instructionComparatorReady[i] == COMP_BUSY)
+      address[i] = retrieveBreakpointAddress(i);
+  }
+  
+  return address;
 }

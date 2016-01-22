@@ -81,7 +81,4 @@ typedef struct
 extern int instructionComparatorReady[INSTRUCTION_COMP_NUM];
 extern int literalComparatorReady[LITERAL_COMP_NUM];
 
-
-
-
 #endif // FPB_Utilities_H

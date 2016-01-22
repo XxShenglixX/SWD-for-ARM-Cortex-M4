@@ -36,5 +36,7 @@ void initialiseFPBUnit();
 void disableAllFlashPatchComparatorSetToBreakpoint();
 void disableAllFlashPatchComparatorSetToRemap();
 
+uint32_t retrieveBreakpointAddress(int instructionCOMPno);
 
+uint32_t * getAllActiveBreakpointAddress();
 #endif // FPB_Unit_H

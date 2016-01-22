@@ -319,10 +319,10 @@ void test_autoSetInstructionRemapping_16bit_machineCode_case()
   //Set CSW to Word Size
 	emulateSwdRegisterWrite(SELECT_REG, SWD_DP, OK, SELECT_BANK0);
 	emulateSwdRegisterWrite(CSW_REG, SWD_AP, OK, (CSW_DEFAULT_MASK | CSW_WORD_SIZE));
-  
+
   //Program machine code
   emulateSwdRegisterWrite(TAR_REG,SWD_AP,4,REMAP_BASE);
-	emulateSwdRegisterWrite(DRW_REG,SWD_AP,4,0xAAAABBBB);
+	emulateSwdRegisterWrite(DRW_REG,SWD_AP,4,0xBBBBAAAA);
   
   //Program FP_REMAP
   emulateSwdRegisterWrite(TAR_REG,SWD_AP,4,(uint32_t)&(FPB->FP_REMAP));
@@ -1017,4 +1017,52 @@ void test_stopAllFlashPatchRemapping_should_only_disable_comparator_set_to_COMP_
   
   TEST_ASSERT_EQUAL(COMP_READY,instructionComparatorReady[2]);
   TEST_ASSERT_EQUAL(COMP_READY,literalComparatorReady[1]);
+}
+
+/*-------------------------retrieveBreakpointAddress-----------------------*/
+void test_retrieveBreakpointAddress_given_instructionCOMP1_contains_0x9ABC883D_should_return_0x1ABC883E()
+{
+  //Read INSTRUCTION_COMP1
+  emulateSwdRegisterWrite(TAR_REG, SWD_AP, OK, (uint32_t)&(INSTRUCTION_COMP[1]));
+	emulateSwdRegisterRead(DRW_REG, SWD_AP, OK, 1, 0);
+	emulateSwdRegisterRead(DRW_REG, SWD_AP, OK, 1, interconvertMSBandLSB(0x9ABC883D));
+  
+  TEST_ASSERT_EQUAL(0x1ABC883E,retrieveBreakpointAddress(INSTRUCTION_COMP1));
+}
+
+void test_retrieveBreakpointAddress_given_instructionCOMP1_contains_0x5ABC883D_should_return_0x1ABC883C()
+{
+  //Read INSTRUCTION_COMP1
+  emulateSwdRegisterWrite(TAR_REG, SWD_AP, OK, (uint32_t)&(INSTRUCTION_COMP[1]));
+	emulateSwdRegisterRead(DRW_REG, SWD_AP, OK, 1, 0);
+	emulateSwdRegisterRead(DRW_REG, SWD_AP, OK, 1, interconvertMSBandLSB(0x5ABC883D));
+  
+  TEST_ASSERT_EQUAL(0x1ABC883C,retrieveBreakpointAddress(INSTRUCTION_COMP1));
+}
+
+/*-------------------------getAllActiveBreakpointAddress-----------------------*/
+void test_getAllActiveBreakpointAddress_given_comp1_and_comp2_busy_should_read_comp1_and_comp2()
+{
+  uint32_t *address;
+  
+  instructionComparatorReady[0] = COMP_READY ;
+  instructionComparatorReady[1] = COMP_BUSY ;
+  instructionComparatorReady[2] = COMP_BUSY ;
+  instructionComparatorReady[3] = COMP_REMAP ;
+  instructionComparatorReady[4] = COMP_READY ;
+  instructionComparatorReady[5] = COMP_READY ;
+  
+  emulateSwdRegisterWrite(TAR_REG, SWD_AP, OK, (uint32_t)&(INSTRUCTION_COMP[1]));
+	emulateSwdRegisterRead(DRW_REG, SWD_AP, OK, 1, 0);
+	emulateSwdRegisterRead(DRW_REG, SWD_AP, OK, 1, interconvertMSBandLSB(0x9ABC883D));
+  
+  emulateSwdRegisterWrite(TAR_REG, SWD_AP, OK, (uint32_t)&(INSTRUCTION_COMP[2]));
+	emulateSwdRegisterRead(DRW_REG, SWD_AP, OK, 1, 0);
+	emulateSwdRegisterRead(DRW_REG, SWD_AP, OK, 1, interconvertMSBandLSB(0x5ABC883D));
+  
+  
+  address = getAllActiveBreakpointAddress();
+  TEST_ASSERT_EQUAL(0,address[0]);
+  TEST_ASSERT_EQUAL(0x1ABC883E,address[1]);
+  TEST_ASSERT_EQUAL(0x1ABC883C,address[2]);
 }
