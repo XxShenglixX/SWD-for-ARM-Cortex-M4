@@ -519,6 +519,31 @@ int stopAllFlashPatchRemapping(Tlv_Session *session)
   returnThis(1);
 }
 
+/**
+ *  Get all the address of the active breakpoint
+ *
+ * Input  : session contain a element/handler used by tlv protocol
+ */
+int getAllActiveBreakpoint(Tlv_Session *session)
+{
+  Tlv *tlv ;
+  
+  uint32_t *address;
+  int size = 0, i=0 ;
+  
+  address = getAllActiveBreakpointAddress();
+  
+  for(i=0 ; i < INSTRUCTION_COMP_NUM ; i ++ )
+  {
+    if(address[i] != 0)
+      size ++ ;
+  }
+  
+  tlv = tlvCreatePacket(TLV_OK, size, (uint8_t*)address);
+  tlvSend(session, tlv);
+  
+  returnThis(1);
+}
 
 /**
  * Check for breakpoint event and return the PC if breakpoint occurs

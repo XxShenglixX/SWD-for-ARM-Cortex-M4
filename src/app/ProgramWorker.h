@@ -88,6 +88,8 @@ int removeWatchpoint(Tlv_Session *session);
 
 int stopFlashPatchRemapping(Tlv_Session *session,uint32_t address);
 int stopAllFlashPatchRemapping(Tlv_Session *session);
+
+int getAllActiveBreakpoint(Tlv_Session *session);
                    
 int breakpointEventHandler(Tlv_Session *session);
 int watchpointEventHandler(Tlv_Session *session);

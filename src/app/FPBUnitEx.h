@@ -6,8 +6,6 @@
 #include "MemoryReadWrite.h"
 #include "core_cm4.h"
 
-#define SOFTBKPT_BUFFER_SIZE  100
-
 typedef struct
 {
   __IO uint32_t  FP_CTRL;
