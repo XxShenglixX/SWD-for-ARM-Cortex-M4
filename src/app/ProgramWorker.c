@@ -825,7 +825,8 @@ int selectTask(Tlv_Session *session, Tlv *tlv)  {
     case TLV_HALT_TARGET                : haltTarget(session);                                                                      break;
     case TLV_RUN_TARGET                 : runTarget(session);                                                                       break;
     case TLV_STEP                       : performMultipleStepInto(session, get4Byte(&tlv->value[0]));                               break;
-    case TLV_STEPOVER					: performStepOver(session);																	break;
+    case TLV_STEPOVER					          : performStepOver(session);																	                                break;
+    case TLV_LISTBREAKPOINT             : getAllActiveBreakpoint(session);
     case TLV_BREAKPOINT                 : setBreakpoint(session, get4Byte(&tlv->value[0]));                                         break;
     case TLV_REMOVE_BREAKPOINT          : removeHardwareBreakpoint(session, get4Byte(&tlv->value[0]));                              break;
     case TLV_REMOVE_ALL_BREAKPOINT      : removeAllHardwareBreakpoint(session);                                                     break;
@@ -841,7 +842,7 @@ int selectTask(Tlv_Session *session, Tlv *tlv)  {
     case TLV_FLASH_MASS_ERASE           : massEraseTargetFlash(session, get4Byte(&tlv->value[0]));                                  break;
     case TLV_SOFT_RESET                 : performSoftResetOnTarget(session);                                                        break;
     case TLV_HARD_RESET                 : performHardResetOnTarget(session);                                                        break;
-    case TLV_VECT_RESET					: performVectorResetOnTarget(session);														break;
+    case TLV_VECT_RESET					        : performVectorResetOnTarget(session);														                          break;
     case TLV_LOOP_BACK                  : loopBack(session, tlv);                                                                   break;
     case TLV_DEBUG_EVENTS               : debugEventHandler(session, tlv->value[0]);                                                break;
     case TLV_VERIFY_COM_PORT            : comPortVerification(session);                                                             break;
