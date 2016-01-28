@@ -137,6 +137,7 @@ void userSetBreakpoint(User_Session *us, String *userInput);
 void userSetWatchpoint(User_Session *us, String *userInput);
 void userSetInstructionRemapping(User_Session *us, String *userInput);
 void userSetLiteralRemapping(User_Session *us, String *userInput);
+void userListInformation(User_Session *us, String *userInput);
 void userRemoveBreakpoint(User_Session *us,String *userInput);
 void userRemoveWatchpoint(User_Session *us);
 void userStopFlashPatchRemapping(User_Session *us,String *userInput);

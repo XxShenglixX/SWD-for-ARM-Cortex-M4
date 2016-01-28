@@ -738,6 +738,7 @@ Process_Status setLiteralRemapping(Tlv_Session *session,uint32_t literalAddress,
   returnThis(PROCESS_DONE);
 }
 
+/
 /** removeBreakpoint is a function to remove a single breakpoint
   *
   * Input   : session contain a element/handler used by tlv protocol
@@ -922,6 +923,57 @@ EventType tlvWaitDebugEvents(Tlv_Session *session, EventType event) {
 
   returnThis(response->value[0]);
 }
+
+/**
+ *  listAllActiveBreakpoint is a function to list all active breakpoint
+ *
+ */
+Process_Status listAllActiveBreakpoint(Tlv_Session *session);
+{
+  static uint32_t previousTime = 0;
+  static uint32_t data[6] =  {} ;
+  static TaskBlock taskBlock = {.state = 0};
+  TaskBlock *tb = &taskBlock;
+  int i ;
+  if(session == NULL) Throw(TLV_NULL_SESSION);
+
+  /* Start task */
+  startTask(tb);
+  /* Send tlv request */
+  tlvSendRequest(session, TLV_LISTBREAKPOINT, 0, NULL);
+  /* Waiting reply from probe */
+  previousTime = getSystemTime();
+  while((response = tlvReceive(session)) == NULL) {
+    /* Check is maximum timeout is reached */
+    isProbeAlive(isTimeout(FIVE_SECOND, previousTime), tb);
+    yield(tb);
+  };
+  
+  printf("Active Breakpoint \n");
+  for(i = 0 ; i < response->length -1 ; i ++)
+  {
+      data[i] = get4Byte(&response->value[i*4]);
+      printf("%d. \t%x",i+1,data[i]);
+  }   
+  
+  /* End task */
+  endTask(tb);
+  
+  returnThis(PROCESS_DONE);
+  
+}
+
+/** listAllActiveWatchpoint is a function to list active watchpoint
+  *
+  * Input   : session contain a element/handler used by tlv protocol
+  *
+  * Return  : NONE
+  */
+Process_Status listAllActiveWatchpoint(Tlv_Session *session)
+{
+  
+}
+
 
 /** selectCommand is a function to select instruction
   * base on userSession

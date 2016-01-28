@@ -475,6 +475,31 @@ void userSetLiteralRemapping(User_Session *us, String *userInput)
   us->data[0] = (uint32_t)data->value;
 }
 
+/** userListInformation is a function to list all active breakpoint/watchpoint
+  *
+  * Input   : userInput is the string enter by user
+  *
+  * return  : userSession contain all the information from the user input
+  */
+void userListInformation(User_Session *us, String *userInput)
+{
+  CEXCEPTION_T err; 
+  Identifier *option ;
+  
+  Try {
+    option = (Identifier*)getToken(userInput);
+    
+  } Catch(err)  {
+    Throw(ERR_INCOMPLETE_COMMAND);
+  }
+
+  if(option->type != NUMBER_TOKEN)     Throw(ERR_INVALID_LIST_OPTION);
+
+  if(strcmp(option->name, "breakpoint") == 0)       us->tlvCommand = TLV_LISTBREAKPOINT;
+  else if(strcmp(option->name, "watchpoint") == 0)  us->tlvCommand = TLV_LISTWATCHPOINT;
+  else                                              Throw(ERR_INVALID_LIST_OPTION);
+}
+
 /** userRemoveBreakpoint is a function to remove breakpoint
   * based on the input
   *
@@ -677,11 +702,10 @@ Command_Code getCommandCode(char *commandName) {
   else if(strcmp(commandName, "watch") == 0)          return WATCHPOINT;
   else if(strcmp(commandName, "iRemap") == 0)         return INSTRUCTION_REMAP;
   else if(strcmp(commandName, "lRemap") == 0)         return LITERAL_REMAP;
+  else if(strcmp(commandName, "listt") == 0)          return LIST_INFO;
   else if(strcmp(commandName, "rmBrkpt") == 0)        return REMOVE_BREAKPOINT;
-  //else if(strcmp(commandName, "rmAllBrkpt") == 0)     return REMOVE_ALLBREAKPOINT;
   else if(strcmp(commandName, "rmWatch") == 0)        return REMOVE_WATCHPOINT;
   else if(strcmp(commandName, "stopRemap") == 0)      return STOP_REMAP;
-  //else if(strcmp(commandName, "stopAllRemap") == 0)   return STOP_ALLREMAP;
   else if(strcmp(commandName, "erase") == 0)          return ERASE;
   else if(strcmp(commandName, "reset") == 0)          return RESET_COMMAND;
   else if(strcmp(commandName, "exit") == 0)           return EXIT;
@@ -715,11 +739,10 @@ void helpMenu(String *userInput) {
     printf(" watch        set data watchpoint to monitor data changes\n");
     printf(" iRemap       perform instruction remapping\n");
     printf(" lRemap       perform literal remapping\n");
+    printf(" list         list all active breakpoint/watchpoint\n");
     printf(" rmBrkpt      remove breakpoint for specific address or all breakpoints\n");
-    //printf(" rmAllBrkpt   remove all breakpoint\n");
     printf(" rmWatch      remove data watchpoint\n");
     printf(" stopRemap    stop flash patch remapping for specific address or stop all\n");
-    //printf(" stopAllRemap stop all instruction and literal remapping\n")
     printf(" erase        erase target flash memory\n");
     printf(" reset        reset target process\n");
     printf(" exit         exit current program\n");
@@ -858,6 +881,13 @@ void helpCommand(Command_Code ccode) {
                                         printf(" <data>           Value of the literal data to be remapped onto             \n");
                                         break;
                                         
+    case LIST_INFO                    : printf(" list <option>                                                           \n\n");
+                                        printf(" <option>       Different modes of listing information and can be one of   \n");
+                                        printf("                the following value :                                      \n");
+                                        printf("                breakpoint        :: list active breakpoint                \n");
+                                        printf("                watchpoint        :: list active watchpoint                \n");
+                                        break;
+
     case REMOVE_BREAKPOINT            : printf(" Remove single breakpoint for a specific address                          \n\n");
                                         printf(" rmBrkpt <address>                                                          \n");
                                         printf(" <address>        Address of the breakpoint set in code region to be removed\n");
@@ -865,12 +895,7 @@ void helpCommand(Command_Code ccode) {
                                         printf(" Remove all breakpoint                                                    \n\n");
                                         printf(" rmBrkpt <empty>                                                            \n");
                                         break;
-                                        
-    // case REMOVE_ALLBREAKPOINT         : printf("\n");
-                                        // printf("\n");
-                                        // printf("\n");
-                                        // break;
-                                        
+                                                                              
     case REMOVE_WATCHPOINT            : printf(" rmWatch <empty>                                                            \n");
                                         break;
                                         
@@ -881,12 +906,7 @@ void helpCommand(Command_Code ccode) {
                                         printf(" Stop all instruction/literal remapping                                   \n\n");
                                         printf(" stopRemap <empty>                                                          \n");
                                         break;
-    
-    // case STOP_ALLREMAP                : printf("\n");
-                                        // printf("\n");
-                                        // printf("\n");
-                                        // break;
-                                        
+                                          
     case ERASE                        : printf(" Section Erase                                                              \n");
                                         printf(" erase <section> <address> <size>                                         \n\n");
                                         printf(" <address>        Any valid flash address 0x08000000 - 0x081FFFFF           \n");
@@ -940,10 +960,9 @@ User_Session *InterpreteCommand(String *userInput) {
   else if(ccode == INSTRUCTION_REMAP)         userSetInstructionRemapping(us,userInput);
   else if(ccode == LITERAL_REMAP)             userSetLiteralRemapping(us,userInput);
   else if(ccode == REMOVE_BREAKPOINT)         userRemoveBreakpoint(us,userInput);
-  //else if(ccode == REMOVE_ALLBREAKPOINT)      userRemoveAllBreakpoint(us);
+  else if(ccode == LIST_INFO)                 userListInformation(us,userInput);
   else if(ccode == REMOVE_WATCHPOINT)         userRemoveWatchpoint(us);
   else if(ccode == STOP_REMAP)                userStopFlashPatchRemapping(us,userInput);
-  //else if(ccode == STOP_ALLREMAP)             userStopAllFlashPatchRemapping(us);
   else if(ccode == ERASE)                     userErase(us, userInput);
   else if(ccode == RESET_COMMAND)             userReset(us, userInput);
   else if(ccode == EXIT)                      userExit(us);

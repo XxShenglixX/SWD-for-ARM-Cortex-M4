@@ -81,6 +81,12 @@ Process_Status setWatchpoint(Tlv_Session *session, uint32_t address,uint32_t add
 Process_Status setInstructionRemapping(Tlv_Session *session,uint32_t instructionAddress,uint32_t machineCode);
 Process_Status setLiteralRemapping(Tlv_Session *session,uint32_t literalAddress,uint32_t literalData);
 
+/* List Breakpoint*/
+Process_Status listAllActiveBreakpoint(Tlv_Session *session);
+
+/* List Watchpoint*/
+Process_Status listAllActiveWatchpoint(Tlv_Session *session);
+
 /* Remove Breakpoint */
 Process_Status removeBreakpoint(Tlv_Session *session, uint32_t instructionAddress);
 Process_Status removeAllBreakpoint(Tlv_Session *session);

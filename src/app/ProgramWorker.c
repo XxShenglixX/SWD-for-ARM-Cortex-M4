@@ -458,6 +458,7 @@ int removeAllHardwareBreakpoint(Tlv_Session *session)
   Tlv *tlv ;
 
   disableAllFlashPatchComparatorSetToBreakpoint();
+  clearBreakpointDebugEvent();
 
   tlv = tlvCreatePacket(TLV_OK, 0, 0);
   tlvSend(session, tlv);
