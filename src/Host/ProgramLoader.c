@@ -950,7 +950,7 @@ Process_Status listAllActiveBreakpoint(Tlv_Session *session);
   };
   
   printf("Active Breakpoint \n");
-  for(i = 0 ; i < response->length -1 ; i ++)
+  for(i = 0 ; i < (response->length / 4) -1 ; i ++)
   {
       data[i] = get4Byte(&response->value[i*4]);
       printf("%d. \t%x",i+1,data[i]);
